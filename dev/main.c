@@ -43,6 +43,8 @@ int count_characters(const char *str, char character);
 int request_resources(int customer_num, int request[]);
 int release_resources(int customer_num, int request[]);
 
+void populate_resources(char **argv, int *available_resources);
+
 
 int main(int argc, char **argv) {
     printf("Dev area operating...\n");
@@ -64,6 +66,10 @@ int main(int argc, char **argv) {
     int need_customer[number_of_customers][number_of_resources]; //Necessidade restante de cada cliente
 
     int available_resources[number_of_resources];// Quantidade atualmente disponível de cada recurso
+
+        // printf("numero de recursos: %d\n", number_of_resources);
+
+        // populate_resources(argv, available_resources);
 
     fclose(result_file);
 
@@ -139,6 +145,9 @@ void read_customers(char *filename){
 
     }
     // Popular arrays com os valores lidos do arquivo
+    fseek(customers_file, 0, SEEK_SET);
+
+
 
     fclose(customers_file);
 
@@ -204,4 +213,18 @@ int count_characters(const char *str, char character){
     } while (*(p++));
 
     return count;
+}
+
+int request_resources(int customer_num, int request[]){
+
+}
+
+int release_resources(int customer_num, int request[]){
+
+}
+
+void populate_resources(char **argv, int *available_resources){
+    for(int i = 0; i < number_of_resources; i++){
+        available_resources[i] = atoi(argv[i+1]);
+    }
 }
