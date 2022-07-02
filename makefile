@@ -18,6 +18,6 @@ run-dev:
 clean-dev:
 	rm ./dev/banker
 
-dev: ./banker
+dev: ./banker-dev
 
 build: ./banker

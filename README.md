@@ -4,7 +4,7 @@
 ## Para utiliza-lo é necessário ter uma máquina UNIX (linux ou mac) e os seguintes arquivos:
 
 ### - Arquivo commands.txt com todos os comandos que serão executados pelo algoritmo
-### - Arquivo customer.txt com todos os consumidores de recursos.
+### - Arquivo customer.txt com todos os clientes de recursos.
 
 
 ## Como executar:

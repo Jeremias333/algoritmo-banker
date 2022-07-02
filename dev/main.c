@@ -8,7 +8,7 @@
 #define CLOSE_MSG "PROGRAMA ENCERRADO\n"
 
 //Path files CONSTANTES
-#define PATH_CUSTOMER "customers.txt"
+#define PATH_CUSTOMER "customer.txt"
 #define PATH_COMMANDS "commands.txt"
 #define PATH_RESULT "result.txt"
 
@@ -18,20 +18,57 @@ FILE *commands_file;
 FILE *result_file;
 FILE *temp_file;
 
+// Customer VARS
+int number_of_customers = 0; //Quantidade de instancias de clientes
+int maximum_customers; //Quantidade máxima de demanda por cliente
+int allocation_customer; //Valor atualmente alocado para cada cliente
+int need_customer; //Necessidade restante de cada cliente
+
+// Resource VARS
+int number_of_resources = 0;//Quantidade de instancia de recursos
+int available_resources;// Quantidade atualmente disponível de cada recurso
+
+// Commands VARS
+int number_of_commands;//Quantidade de comandos
+
+// General VARS
+int qntd_params;
+
+// Function PROTOTYPES
 void print_err(char *err);
+
 void get_file_error();
 void prepare_to_write_result();
+void read_customers(char *filename);
+void read_commands(char *filename);
+void get_over_resource(int qntd);
+int count_characters(const char *str, char character);
+
+int request_resources(int customer_num, int request[]);
+int release_resources(int customer_num, int request[]);
 
 
 int main(int argc, char **argv) {
     printf("Dev area operating...\n");
+    qntd_params = argc-1;
+    number_of_resources = argc;
+
 
     //Verify initial erros
     get_file_error(PATH_CUSTOMER);
     get_file_error(PATH_COMMANDS);
 
+    read_customers(PATH_CUSTOMER);
+    return 0;
+    read_commands(PATH_COMMANDS);
+    prepare_to_write_result();
 
-    fclose(result_file)
+    //Inicializando variáveis
+
+
+
+
+    fclose(result_file);
 
     return 0;
 }
@@ -48,6 +85,7 @@ void get_file_error(char *file_name) {
 
     if(strcmp(*temp, "txt") != 0){
         char *ERR = DEFAULT_ERR_MSG"O arquivo passado não é um arquivo .txt";
+        printf("Falha no arquivo: %s\n", file_name);
         print_err(ERR);
         exit(1);
     }
@@ -56,6 +94,7 @@ void get_file_error(char *file_name) {
 
     if (temp_file == NULL){
         char *ERR = DEFAULT_ERR_MSG"Ao abrir o arquivo. Está vazio ou não existe";
+        printf("Falha no arquivo: %s\n", file_name);
         print_err(ERR);
         exit(1);
     }
@@ -71,4 +110,61 @@ void prepare_to_write_result(){
 
     //Abrindo arquivo para append no arquivo
     result_file = fopen(PATH_RESULT, "a");
+}
+
+void read_customers(char *filename){
+    customers_file = fopen(filename, "r");
+    int character_code;
+    int lines_in_file = 0;
+    char line_str[20];
+
+    int count_char = 0;
+
+
+    while(!feof(customers_file)){
+        character_code = fgetc(customers_file);
+        if(character_code == '\n'){
+            lines_in_file++;
+        }
+    }
+    
+    lines_in_file++;//Pegando uma linha a mais para ficar na mesma quantidade de linhas do arquivo.
+    fseek(customers_file, 0, SEEK_SET);
+    while (!feof(customers_file)){
+        fgets(line_str, sizeof(line_str), customers_file);
+        printf("%s\n", line_str);
+        count_char = count_characters(line_str, ','); // Ele irá retornar a quantidade de ',' na string
+                                                    // A quantidade de ',' + 1 é a quantidade de clientes
+                                                    // No arquivo.
+        get_over_resource(count_char+1);
+
+    }
+    fclose(customers_file);
+
+}
+
+void read_commands(char *filename){
+    commands_file = fopen(filename, "r");
+
+}
+
+// Levanta erro em caso de recursos serem incompatíveis com instancias de clientes
+void get_over_resource(int resources_needs_in_file){
+    if(qntd_params != resources_needs_in_file){
+        char *ERR = DEFAULT_ERR_MSG"Não há recursos suficientes para atender a demanda";
+        print_err(ERR);
+    }
+}
+
+int count_characters(const char *str, char character){
+    const char *p = str;
+    int count = 0;
+
+    do {
+        if (*p == character){
+            count++;
+        }
+    } while (*(p++));
+
+    return count;
 }
