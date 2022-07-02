@@ -20,13 +20,9 @@ FILE *temp_file;
 
 // Customer VARS
 int number_of_customers = 0; //Quantidade de instancias de clientes
-int maximum_customers; //Quantidade máxima de demanda por cliente
-int allocation_customer; //Valor atualmente alocado para cada cliente
-int need_customer; //Necessidade restante de cada cliente
 
 // Resource VARS
 int number_of_resources = 0;//Quantidade de instancia de recursos
-int available_resources;// Quantidade atualmente disponível de cada recurso
 
 // Commands VARS
 int number_of_commands;//Quantidade de comandos
@@ -51,7 +47,7 @@ int release_resources(int customer_num, int request[]);
 int main(int argc, char **argv) {
     printf("Dev area operating...\n");
     qntd_params = argc-1;
-    number_of_resources = argc;
+    number_of_resources = argc; //
 
 
     //Verify initial erros
@@ -59,14 +55,15 @@ int main(int argc, char **argv) {
     get_file_error(PATH_COMMANDS);
 
     read_customers(PATH_CUSTOMER);
-    return 0;
     read_commands(PATH_COMMANDS);
     prepare_to_write_result();
 
     //Inicializando variáveis
+    int maximum_customers[number_of_customers][number_of_resources]; //Quantidade máxima de demanda por cliente
+    int allocation_customer[number_of_customers][number_of_resources]; //Valor atualmente alocado para cada cliente
+    int need_customer[number_of_customers][number_of_resources]; //Necessidade restante de cada cliente
 
-
-
+    int available_resources[number_of_resources];// Quantidade atualmente disponível de cada recurso
 
     fclose(result_file);
 
@@ -127,24 +124,64 @@ void read_customers(char *filename){
             lines_in_file++;
         }
     }
-    
+    // printf("%s\n", line_str);
+
     lines_in_file++;//Pegando uma linha a mais para ficar na mesma quantidade de linhas do arquivo.
+    number_of_customers = lines_in_file+1; //Quantidade total de clientes
+
     fseek(customers_file, 0, SEEK_SET);
     while (!feof(customers_file)){
         fgets(line_str, sizeof(line_str), customers_file);
-        printf("%s\n", line_str);
         count_char = count_characters(line_str, ','); // Ele irá retornar a quantidade de ',' na string
                                                     // A quantidade de ',' + 1 é a quantidade de clientes
                                                     // No arquivo.
         get_over_resource(count_char+1);
 
     }
+    // Popular arrays com os valores lidos do arquivo
+
     fclose(customers_file);
 
 }
 
 void read_commands(char *filename){
     commands_file = fopen(filename, "r");
+
+    int character_code;
+    int lines_in_file = 0;
+    char line_str[20];
+
+    int count_char = 0;
+
+    while(!feof(commands_file)){
+        character_code = fgetc(commands_file);
+        if(character_code == '\n'){
+            lines_in_file++;
+        }
+    }
+
+    lines_in_file++;//Pegando uma linha a mais para ficar na mesma quantidade de linhas do arquivo.
+    number_of_customers = lines_in_file+1; //Quantidade total de clientes
+
+    fseek(commands_file, 0, SEEK_SET);
+
+    while (!feof(customers_file)){
+        fgets(line_str, sizeof(line_str), customers_file);
+        // printf("%s\n", line_str);
+
+        if (line_str[0] == '*'){
+            // printf("caracter em C: %c\n", line_str[1]);
+            continue;
+        }
+
+        count_char = count_characters(line_str, ' '); // Ele irá retornar a quantidade de ' ' na string (linha)
+                                                    // A quantidade de ' ' - 1 é a quantidade de clientes
+                                                    // No arquivo comando.
+        get_over_resource(count_char-1);
+    }
+    // Popular arrays com os valores lidos do arquivo
+
+    fclose(customers_file);
 
 }
 
